@@ -1,0 +1,41 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "hanamj@shaw.ca",
+    "longName": "MisfitC",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/pb_wait.png",
+                "name": "IMAGE_WAIT",
+                "type": "png"
+            },
+            {
+                "file": "images/pb_user.png",
+                "name": "IMAGE_USER",
+                "type": "png"
+            },
+            {
+                "file": "images/pb_mc_creep.png",
+                "name": "IMAGE_CREEP",
+                "type": "png"
+            },
+            {
+                "file": "images/pb_chat.png",
+                "name": "IMAGE_CHAT",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "2",
+    "shortName": "MisfitC",
+    "uuid": "128b8250-195b-46eb-a1ba-99cfe6231915",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
