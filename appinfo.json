@@ -1,5 +1,7 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "PLAYER_LIST": 1
+    },
     "capabilities": [
         ""
     ],

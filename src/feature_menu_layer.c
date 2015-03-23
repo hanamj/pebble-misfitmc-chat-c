@@ -5,10 +5,30 @@
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ICONS 2
 #define NUM_FIRST_MENU_ITEMS 2
+  
+#define PLAYER_LIST 1
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 static GBitmap *s_menu_icons[NUM_MENU_ICONS];
+static AppSync s_sync;
+static uint8_t s_sync_buffer[1024];
+
+static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "RECEIVED MESSAGE WITH KEY: %d", (int)key);
+  
+  static char s_count_buffer[2000];
+  snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
+  
+  if (key == PLAYER_LIST) {
+    update_players(s_count_buffer);
+  }
+}
+
+static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
+  // An error occured!
+  APP_LOG(APP_LOG_LEVEL_ERROR, "sync error!");
+}
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -56,7 +76,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
   // Use the row to specify which item will receive the select action
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Section %d, Item %d", cell_index->section, cell_index->row);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Section %d, Item %d", cell_index->section, cell_index->row);
   switch (cell_index->row) {
     case 0:
       show_players();
@@ -67,13 +87,9 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
       break;
     case 1:
       show_chat();
-      // Cycle the icon
-      //s_current_icon = (s_current_icon + 1) % NUM_MENU_ICONS;
-      // After changing the icon, mark the layer to have it updated
-      //layer_mark_dirty(menu_layer_get_layer(menu_layer));
       break;
   }
-
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Players %d, Chats %d", showing_players, showing_chats);
 }
 
 static void main_window_load(Window *window) {
@@ -110,8 +126,6 @@ static void main_window_unload(Window *window) {
   for (int i = 0; i < NUM_MENU_ICONS; i++) {
     gbitmap_destroy(s_menu_icons[i]);
   }
-
-  //gbitmap_destroy(s_background_bitmap);
 }
 
 static void init() {
@@ -122,11 +136,23 @@ static void init() {
   });
   window_stack_push(s_main_window, true);
   
+  // Setup AppSync
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+
+  //Setup initial values
+  Tuplet initial_values[] = {
+    TupletCString(PLAYER_LIST, "Loading..."),
+  };
+
+  // Begin using AppSync
+  app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer), initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
+  
   players_init();
   chat_init();
 }
 
 static void deinit() {
+  app_sync_deinit(&s_sync);
   players_deinit();
   chat_deinit();
   window_destroy(s_main_window);
