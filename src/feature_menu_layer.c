@@ -78,7 +78,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   
   switch (cell_index->row) {
     case 0:
-      strcpy(title, "Players.!");
+      strcpy(title, "Players");
       show_players(title, RESOURCE_ID_IMAGE_USER);
       break;
     case 1:

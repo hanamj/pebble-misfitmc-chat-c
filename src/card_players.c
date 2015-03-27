@@ -36,7 +36,12 @@ void update_players(char t[]) {
     }
   }
   
-  strcpy(s_scroll_text, t); //copy the new data into scroll layer
+  if (showing == 1 && strcmp(t, s_scroll_text) != 0) {
+    vibes_short_pulse();
+  }
+  
+  strcpy(s_scroll_text, t); //copy the new data into scroll text variable
+  
   if (showing == 1) { //If we're already showing,
     text_layer_set_text(s_text_layer, t); 
     
