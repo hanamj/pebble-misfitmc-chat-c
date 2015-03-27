@@ -1,5 +1,6 @@
 {
     "appKeys": {
+        "OPEN_CARD": 3,
         "PLAYER_LIST": 1
     },
     "capabilities": [

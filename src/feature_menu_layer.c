@@ -14,9 +14,8 @@ static GBitmap *s_menu_icons[NUM_MENU_ICONS];
 static AppSync s_sync;
 static uint8_t s_sync_buffer[1024];
 
-static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "RECEIVED MESSAGE WITH KEY: %d", (int)key);
-  
+static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {  
+  //Get the new value from the data sync
   static char s_count_buffer[2000];
   snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
   
@@ -26,7 +25,6 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 }
 
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-  // An error occured!
   APP_LOG(APP_LOG_LEVEL_ERROR, "sync error!");
 }
 
@@ -76,20 +74,17 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
   // Use the row to specify which item will receive the select action
-  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Section %d, Item %d", cell_index->section, cell_index->row);
+  char title[50];
+  
   switch (cell_index->row) {
     case 0:
-      show_players();
-      // Cycle the icon
-      //s_current_icon = (s_current_icon + 1) % NUM_MENU_ICONS;
-      // After changing the icon, mark the layer to have it updated
-      //layer_mark_dirty(menu_layer_get_layer(menu_layer));
+      strcpy(title, "Players.!");
+      show_players(title, RESOURCE_ID_IMAGE_USER);
       break;
     case 1:
       show_chat();
       break;
   }
-  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Players %d, Chats %d", showing_players, showing_chats);
 }
 
 static void main_window_load(Window *window) {
@@ -128,11 +123,16 @@ static void main_window_unload(Window *window) {
   }
 }
 
+static void main_window_appear(Window *window) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Back in main menu!");
+}
+
 static void init() {
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
     .unload = main_window_unload,
+    .appear = main_window_appear
   });
   window_stack_push(s_main_window, true);
   

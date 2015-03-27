@@ -10,9 +10,9 @@ function getPlayers() {
           text += response[index].displayName + "\n";
         }
         
-        console.log(text);
+      console.log("Got Player Data");
         //text = "1\n2\n3\n4\n5\n" + text;
-        var dict = {"PLAYER_LIST": text};
+        var dict = {"PLAYER_LIST": "p1\np2\np3\np4\np5\n"+text};
         Pebble.sendAppMessage(dict);
     } else { console.log('HTTP Error'); }
   };
