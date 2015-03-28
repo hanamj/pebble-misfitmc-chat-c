@@ -8,7 +8,7 @@
         ""
     ],
     "companyName": "hanamj@shaw.ca",
-    "longName": "MisfitC",
+    "longName": "Misfit MC",
     "projectType": "native",
     "resources": {
         "media": [
@@ -24,6 +24,7 @@
             },
             {
                 "file": "images/pb_mc_creep.png",
+                "menuIcon": true,
                 "name": "IMAGE_CREEP",
                 "type": "png"
             },
@@ -35,10 +36,10 @@
         ]
     },
     "sdkVersion": "2",
-    "shortName": "MisfitC",
-    "uuid": "128b8250-195b-46eb-a1ba-99cfe6231915",
+    "shortName": "Misfit MC",
+    "uuid": "245c4a36-e017-431a-9f3d-9266d3a9fc26",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "2.0",
     "watchapp": {
         "watchface": false
     }

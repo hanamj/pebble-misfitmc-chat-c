@@ -53,7 +53,7 @@ function getChat() {
       
         for(var index in d) {
           name = removeFormatting("" + d[index].dname);
-          if (name.length >= 15) name = name.substring(0, 5) + "..";
+          if (name.length > 18) name = name.substring(0, 16) + "..";
           
           msg = d[index].chat;
           msg = removeFormatting(msg);

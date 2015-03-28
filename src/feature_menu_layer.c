@@ -1,6 +1,5 @@
 #include "pebble.h"
-#include "card_players.h"
-//#include "card_chat.h"
+#include "card.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ICONS 2
@@ -28,7 +27,7 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
     snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
     
     APP_LOG(APP_LOG_LEVEL_INFO, "App Received: %d  %s", (int)key, s_count_buffer);
-    update_players(s_count_buffer);
+    update_card(s_count_buffer);
   }
   
 }
@@ -104,12 +103,12 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->row) {
     case 0:
       strcpy(title, "Players");
-      show_players(title, RESOURCE_ID_IMAGE_USER);
+      show_card(title, RESOURCE_ID_IMAGE_USER);
       request_content(WINDOW_PLAYERS);
       break;
     case 1:
       strcpy(title, "Chat");
-      show_players(title, RESOURCE_ID_IMAGE_CHAT);
+      show_card(title, RESOURCE_ID_IMAGE_CHAT);
       request_content(WINDOW_CHAT);
       break;
   }
@@ -178,13 +177,13 @@ static void init() {
   // Begin using AppSync
   app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer), initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
   
-  players_init();
+  card_init();
   //chat_init();
 }
 
 static void deinit() {
   app_sync_deinit(&s_sync);
-  players_deinit();
+  card_deinit();
   //chat_deinit();
   window_destroy(s_main_window);
 }

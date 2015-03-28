@@ -1,5 +1,5 @@
 #include <pebble.h>
-#include "card_players.h"
+#include "card.h"
 
 static char s_scroll_text[2000] = "Loading...";
 static char s_title_text[50] = "Content";
@@ -17,14 +17,14 @@ static InverterLayer *s_inverter_layer;
 int showing = 0;
 int haveData = 0;
 
-void show_players(char new_title[], uint32_t img) {
+void show_card(char new_title[], uint32_t img) {
   strcpy(s_title_text, new_title);
   s_image_player = gbitmap_create_with_resource(img);
   
   window_stack_push(player_window, true);
 }
 
-void update_players(char t[]) {
+void update_card(char t[]) {
   
   //If we've changed from Loading..., update image
   if (haveData == 0 && strcmp(t, "Loading...") != 0) {
@@ -134,7 +134,7 @@ static void window_disappear(Window *window) {
   strcpy(s_scroll_text, "Loading...");
 }
   
-void players_init() {
+void card_init() {
   player_window = window_create();
 
   //window_set_click_config_provider_with_context(s_entry_window, click_config_provider, (void*)s_entry_window);
@@ -146,6 +146,6 @@ void players_init() {
   });
 }
 
-void players_deinit() {
+void card_deinit() {
   window_destroy(player_window);
 }
