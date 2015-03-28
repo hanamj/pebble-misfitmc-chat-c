@@ -1,6 +1,7 @@
 {
     "appKeys": {
-        "OPEN_CARD": 3,
+        "CHAT_LIST": 2,
+        "PAGE_CONTROL": 3,
         "PLAYER_LIST": 1
     },
     "capabilities": [

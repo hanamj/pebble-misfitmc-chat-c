@@ -1,31 +1,56 @@
 #include "pebble.h"
 #include "card_players.h"
-#include "card_chat.h"
+//#include "card_chat.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ICONS 2
 #define NUM_FIRST_MENU_ITEMS 2
   
-#define PLAYER_LIST 1
+#define KEY_PLAYER_LIST 1
+#define KEY_CHAT_LIST 2
+#define KEY_PAGE_CONTROL 3
 
+#define WINDOW_MENU 0
+#define WINDOW_PLAYERS 1
+#define WINDOW_CHAT 2
+  
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 static GBitmap *s_menu_icons[NUM_MENU_ICONS];
 static AppSync s_sync;
 static uint8_t s_sync_buffer[1024];
+int activeWindow = 0;
 
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {  
-  //Get the new value from the data sync
-  static char s_count_buffer[2000];
-  snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
-  
-  if (key == PLAYER_LIST) {
+  //Get the new value from the data sync 
+  if ((int)key == activeWindow) {
+    static char s_count_buffer[2000];
+    snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
+    
+    APP_LOG(APP_LOG_LEVEL_INFO, "App Received: %d  %s", (int)key, s_count_buffer);
     update_players(s_count_buffer);
   }
+  
 }
 
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "sync error!");
+}
+
+static void request_content(int page) {
+  activeWindow = page;
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+
+  if (!iter) {
+    // Error creating outbound message
+    return;
+  }
+
+  dict_write_int(iter, KEY_PAGE_CONTROL, &page, sizeof(int), true);
+  dict_write_end(iter);
+
+  app_message_outbox_send();
 }
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
@@ -80,17 +105,20 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
     case 0:
       strcpy(title, "Players");
       show_players(title, RESOURCE_ID_IMAGE_USER);
+      request_content(WINDOW_PLAYERS);
       break;
     case 1:
-      show_chat();
+      strcpy(title, "Chat");
+      show_players(title, RESOURCE_ID_IMAGE_CHAT);
+      request_content(WINDOW_CHAT);
       break;
   }
 }
 
 static void main_window_load(Window *window) {
   // Here we load the bitmap assets
-  s_menu_icons[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CHAT);
-  s_menu_icons[1] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_USER);
+  s_menu_icons[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_USER);
+  s_menu_icons[1]= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CHAT);
 
   // Now we prepare to initialize the menu layer
   Layer *window_layer = window_get_root_layer(window);
@@ -125,6 +153,8 @@ static void main_window_unload(Window *window) {
 
 static void main_window_appear(Window *window) {
   APP_LOG(APP_LOG_LEVEL_INFO, "Back in main menu!");
+  request_content(WINDOW_MENU);
+  activeWindow = WINDOW_MENU;
 }
 
 static void init() {
@@ -141,20 +171,21 @@ static void init() {
 
   //Setup initial values
   Tuplet initial_values[] = {
-    TupletCString(PLAYER_LIST, "Loading..."),
+    TupletCString(KEY_PLAYER_LIST, "Loading..."),
+    TupletCString(KEY_CHAT_LIST, "Loading..."),
   };
 
   // Begin using AppSync
   app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer), initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
   
   players_init();
-  chat_init();
+  //chat_init();
 }
 
 static void deinit() {
   app_sync_deinit(&s_sync);
   players_deinit();
-  chat_deinit();
+  //chat_deinit();
   window_destroy(s_main_window);
 }
 

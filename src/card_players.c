@@ -3,7 +3,6 @@
 
 static char s_scroll_text[2000] = "Loading...";
 static char s_title_text[50] = "Content";
-//static uint32_t resource_id = RESOURCE_ID_IMAGE_WAIT;
 
 static Window *player_window;
 static ScrollLayer *s_scroll_layer;
@@ -36,7 +35,7 @@ void update_players(char t[]) {
     }
   }
   
-  if (showing == 1 && strcmp(t, s_scroll_text) != 0) {
+  if (showing == 1 && strcmp(s_scroll_text, "Loading...") != 0 && strcmp(t, s_scroll_text) != 0) {
     vibes_short_pulse();
   }
   
@@ -57,17 +56,17 @@ void update_players(char t[]) {
 static void layer_update_callback(Layer *layer, GContext* ctx) {
   if (haveData) {
     GSize image_size = s_image_player->bounds.size;
-    graphics_draw_bitmap_in_rect(ctx, s_image_player, GRect(0, 2, image_size.w, image_size.h));
+    graphics_draw_bitmap_in_rect(ctx, s_image_player, GRect(0, 1, image_size.w, image_size.h));
   } else {
     GSize image_size = s_image_load->bounds.size;
-    graphics_draw_bitmap_in_rect(ctx, s_image_load, GRect(0, 2, image_size.w, image_size.h));
+    graphics_draw_bitmap_in_rect(ctx, s_image_load, GRect(0, 1, image_size.w, image_size.h));
   } 
 }
 
 static void update_title_layer_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_frame(layer);
   graphics_context_set_text_color(ctx, GColorBlack);
-  graphics_draw_text(ctx, s_title_text, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD), GRect(0, 0, bounds.size.w, bounds.size.h), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  graphics_draw_text(ctx, s_title_text, fonts_get_system_font(FONT_KEY_GOTHIC_28), GRect(0,-3, bounds.size.w, bounds.size.h), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 
 static void window_load(Window *window) {
@@ -107,7 +106,7 @@ static void window_load(Window *window) {
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_text_layer));
 
   //Add inverter layer over title
-  s_inverter_layer = inverter_layer_create(GRect(0, 0, bounds.size.w, 33));
+  s_inverter_layer = inverter_layer_create(GRect(0, 32, bounds.size.w, 1));
   layer_add_child(window_layer, inverter_layer_get_layer(s_inverter_layer));
   
   layer_add_child(window_layer, scroll_layer_get_layer(s_scroll_layer));
