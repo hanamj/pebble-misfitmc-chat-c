@@ -1,8 +1,9 @@
 {
     "appKeys": {
         "CHAT_LIST": 2,
-        "PAGE_CONTROL": 3,
-        "PLAYER_LIST": 1
+        "PAGE_CONTROL": 99,
+        "PLAYER_LIST": 1,
+        "ACCOUNT_LIST": 3
     },
     "capabilities": [
         ""
@@ -31,6 +32,11 @@
             {
                 "file": "images/pb_chat.png",
                 "name": "IMAGE_CHAT",
+                "type": "png"
+            },
+            {
+                "file": "images/pb_mc_money.png",
+                "name": "IMAGE_MONEY",
                 "type": "png"
             }
         ]

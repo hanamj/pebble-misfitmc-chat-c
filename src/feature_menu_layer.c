@@ -2,16 +2,18 @@
 #include "card.h"
 
 #define NUM_MENU_SECTIONS 1
-#define NUM_MENU_ICONS 2
-#define NUM_FIRST_MENU_ITEMS 2
+#define NUM_MENU_ICONS 3
+#define NUM_FIRST_MENU_ITEMS 3
   
 #define KEY_PLAYER_LIST 1
 #define KEY_CHAT_LIST 2
-#define KEY_PAGE_CONTROL 3
+#define KEY_ACCOUNT_LIST 3
+#define KEY_PAGE_CONTROL 99
 
 #define WINDOW_MENU 0
 #define WINDOW_PLAYERS 1
 #define WINDOW_CHAT 2
+#define WINDOW_MONEY 3
   
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
@@ -26,10 +28,9 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
     static char s_count_buffer[2000];
     snprintf(s_count_buffer, sizeof(s_count_buffer), "%s", new_tuple->value->cstring);
     
-    APP_LOG(APP_LOG_LEVEL_INFO, "App Received: %d  %s", (int)key, s_count_buffer);
+    //APP_LOG(APP_LOG_LEVEL_INFO, "App Received: %d  %s", (int)key, s_count_buffer);
     update_card(s_count_buffer);
   }
-  
 }
 
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
@@ -91,6 +92,9 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
         case 1:
           menu_cell_basic_draw(ctx, cell_layer, "Live Chat", "Live server chat", s_menu_icons[1]);
           break;
+        case 2:
+          menu_cell_basic_draw(ctx, cell_layer, "Top Accounts", "Top 10 richest", s_menu_icons[2]);
+          break;
       }
       break;
   }
@@ -111,6 +115,11 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
       show_card(title, RESOURCE_ID_IMAGE_CHAT);
       request_content(WINDOW_CHAT);
       break;
+    case 2:
+      strcpy(title, "Accounts");
+      show_card(title, RESOURCE_ID_IMAGE_MONEY);
+      request_content(WINDOW_MONEY);
+      break;
   }
 }
 
@@ -118,6 +127,7 @@ static void main_window_load(Window *window) {
   // Here we load the bitmap assets
   s_menu_icons[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_USER);
   s_menu_icons[1]= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CHAT);
+  s_menu_icons[2]= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_MONEY);
 
   // Now we prepare to initialize the menu layer
   Layer *window_layer = window_get_root_layer(window);
@@ -172,6 +182,7 @@ static void init() {
   Tuplet initial_values[] = {
     TupletCString(KEY_PLAYER_LIST, "Loading..."),
     TupletCString(KEY_CHAT_LIST, "Loading..."),
+    TupletCString(KEY_ACCOUNT_LIST, "Loading..."),
   };
 
   // Begin using AppSync
